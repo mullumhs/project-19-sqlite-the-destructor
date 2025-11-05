@@ -1,0 +1,35 @@
+<h1>Search Results for "{{ query }}"</h1>
+
+<a href="{{ url_for('index') }}">Back to Home</a>
+
+<table>
+
+    <tr>
+
+        <th>Title</th>
+
+        <th>Director</th>
+
+        <th>Year</th>
+
+        <th>Rating</th>
+
+    </tr>
+
+    {% for movie in query %}
+
+    <tr>
+
+        <td>{{ movie[1] }}</td>
+
+        <td>{{ movie[2] }}</td>
+
+        <td>{{ movie[3] }}</td>
+
+        <td>{{ movie[4] }}</td>
+
+    </tr>
+
+    {% endfor %}
+
+</table>

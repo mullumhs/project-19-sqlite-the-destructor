@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+
+<html lang="term-for-english">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Movie List</title>
+
+</head>
+
+<body>
+     <a href="{{ url_for('add_movie') }}">Add a new movie</a>
+     <a href="{{ url_for('search_movies') }}">Search for a movie</a>
+    <h1>Movies in Database</h1>
+<table>
+
+    <tr>
+
+        <th>Title</th>
+
+        <th>Director</th>
+
+        <th>Year</th>
+
+        <th>Rating</th>
+
+    </tr>
+
+    {% for movie in movies %}
+
+    <tr>
+
+        <td>{{ movie[1] }}</td>
+
+        <td>{{ movie[2] }}</td>
+
+        <td>{{ movie[3] }}</td>
+
+        <td>{{ movie[4] }}</td>
+
+    </tr>
+
+    {% endfor %}
+
+</table>
+
+   
+</body>
+
+</html>
