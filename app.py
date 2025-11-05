@@ -75,7 +75,7 @@ def delete_movie(conn, title):
 
 def find_movies_by_director(conn, director):
     cursor = conn.cursor()
-    cursor.execute(f'SELECT title, year FROM movies WHERE director = {director}')
+    cursor.execute(f'SELECT title, year FROM movies WHERE director = "{director}"')
 
     directors_movies = cursor.fetchall()
 
