@@ -1,9 +1,11 @@
-<h1>Search Results for "{{ query }}"</h1>
-
 <a href="{{ url_for('index') }}">Back to Home</a>
 
-<table>
+<h1>Search Results for "{{ query }}"</h1>
 
+
+
+<table>
+    
     <tr>
 
         <th>Title</th>
@@ -16,17 +18,17 @@
 
     </tr>
 
-    {% for movie in query %}
+    {% for item in movie %}
 
     <tr>
 
-        <td>{{ movie[1] }}</td>
+        <td>{{ item[1] }}</td>
 
-        <td>{{ movie[2] }}</td>
+        <td>{{ item[2] }}</td>
 
-        <td>{{ movie[3] }}</td>
+        <td>{{ item[3] }}</td>
 
-        <td>{{ movie[4] }}</td>
+        <td>{{ item[4] }}</td>
 
     </tr>
 

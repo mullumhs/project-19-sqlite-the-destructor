@@ -14,18 +14,32 @@ def get_db_connection():
     return conn
 
 
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 
 def index():
+    if request.method == 'POST':
+        title = request.form['title']
+        return redirect(url_for(index)+f'?query={title}')
 
     conn = get_db_connection()
+    query = request.args.get('query')
 
-    movies = conn.execute('SELECT * FROM movies').fetchall()
+    if query:
+        
+        cursor = conn.cursor()
+        cursor.execute(f'SELECT * FROM movies WHERE title LIKE "{query}"')
 
+        directors_movies = cursor.fetchall()
+        print(f"\nMovies from {query}:")
+
+        return render_template('search.html', movie=directors_movies, query=query)
+
+
+    else:
+        movies = conn.execute('SELECT * FROM movies').fetchall()
+        return render_template('index.html', movies=movies)
+    
     conn.close()
-
-    return render_template('index.html', movies=movies)
-
 @app.route('/add', methods=['GET', 'POST'])
 
 def add_movie():
@@ -61,32 +75,25 @@ def add_movie():
     return render_template('add.html')
 
 
-@app.route('/search')
+@app.route('/search', methods=['GET', 'POST'])
 
 def search_movies():
 
-    query = request.args.get('query', '')
+    query = request.args.get('query', ' ')
 
     conn = get_db_connection()
 
-    conn.row_factory = sqlite3.Row
-
     cursor = conn.cursor()
-    cursor.execute(f'SELECT title, year FROM movies WHERE director = "{query}"')
+    cursor.execute(f'SELECT * FROM movies WHERE title LIKE "{query}"')
 
     directors_movies = cursor.fetchall()
-
     print(f"\nMovies from {query}:")
 
-    for movie in directors_movies:
-
-        print(f"{movie[0]} ({movie[1]})")
-
-    movies = conn.execute('Your SQL query here', ('%' + query + '%',)).fetchall()
+    #movies = conn.execute('Your SQL query here', ('FROM movies WHERE ' + query + ' LIKE',)).fetchall()
 
     conn.close()
 
-    return render_template('search.html', movies=movies, query=query)
+    return render_template('search.html', movie=directors_movies, query=query)
 
 
 if __name__ == '__main__':
