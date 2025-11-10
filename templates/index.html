@@ -13,12 +13,7 @@
 </head>
 
 <body>
-     <a href="{{ url_for('add_movie') }}">Add a new movie</a>
-     <a href="{{ url_for('search_movies') }}">Search for a movie</a>
     <h1>Movies in Database</h1>
-
-    <input type="text" name="title" placeholder="Title" required>
-    <input type="submit" value="Search for Title">
 
 <table>
 
@@ -38,13 +33,13 @@
 
     <tr>
 
-        <td>{{ movie[1] }}</td>
+        <td>{{ movie.title }}</td>
 
-        <td>{{ movie[2] }}</td>
+        <td>{{ movie.director }}</td>
 
-        <td>{{ movie[3] }}</td>
+        <td>{{ movie.year }}</td>
 
-        <td>{{ movie[4] }}</td>
+        <td>{{ movie.rating }}</td>
 
     </tr>
 

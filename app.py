@@ -1,99 +1,91 @@
 from flask import Flask, render_template, request, redirect, url_for
-import sqlite3
-
-
+from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///movies.db'
+
+db = SQLAlchemy(app)
 
 
-def get_db_connection():
 
-    conn = sqlite3.connect('movies.db')
+class Movie(db.Model):
 
-    return conn
+    id = db.Column(db.Integer, primary_key=True)
+
+    title = db.Column(db.String(100), nullable=False)
+
+    director = db.Column(db.String(100))
+
+    year = db.Column(db.Integer)
+
+    rating = db.Column(db.Float)
 
 
-@app.route('/', methods=['GET', 'POST'])
+
+with app.app_context():
+
+    db.create_all()
+
+
+
+@app.route('/')
 
 def index():
-    if request.method == 'POST':
-        title = request.form['title']
-        return redirect(url_for(index)+f'?query={title}')
 
-    conn = get_db_connection()
-    query = request.args.get('query')
+    movies = Movie.query.all()
 
-    if query:
-        
-        cursor = conn.cursor()
-        cursor.execute(f'SELECT * FROM movies WHERE title LIKE "{query}"')
+    return render_template('index.html', movies=movies)
 
-        directors_movies = cursor.fetchall()
-        print(f"\nMovies from {query}:")
-
-        return render_template('search.html', movie=directors_movies, query=query)
-
-
-    else:
-        movies = conn.execute('SELECT * FROM movies').fetchall()
-        return render_template('index.html', movies=movies)
-    
-    conn.close()
 @app.route('/add', methods=['GET', 'POST'])
 
 def add_movie():
-    # On a form submission (POST)
 
     if request.method == 'POST':
 
-        title = request.form['title']
+        new_movie = Movie(
 
-        director = request.form['director']
+            title=request.form['title'],
 
-        year = int(request.form['year'])
+            director=request.form['director'],
 
-        rating = float(request.form['rating'])
+            year=int(request.form['year']),
 
-        
+            rating=float(request.form['rating'])
 
-        conn = get_db_connection()
+        )
 
-        conn.execute('INSERT INTO movies (title, director, year, rating) VALUES (?, ?, ?, ?)',
+        db.session.add(new_movie)
 
-                     (title, director, year, rating))
-
-        conn.commit()
-
-        conn.close()
+        db.session.commit()
 
         return redirect(url_for('index'))
-
-    
-    # On visiting the page (GET)
 
     return render_template('add.html')
 
 
-@app.route('/search', methods=['GET', 'POST'])
 
-def search_movies():
+@app.route('/edit/<int:id>', methods=['GET', 'POST'])
 
-    query = request.args.get('query', ' ')
+def edit_movie(id):
 
-    conn = get_db_connection()
+    movie = Movie.query.get_or_404(id)
 
-    cursor = conn.cursor()
-    cursor.execute(f'SELECT * FROM movies WHERE title LIKE "{query}"')
+    if request.method == 'POST':
 
-    directors_movies = cursor.fetchall()
-    print(f"\nMovies from {query}:")
+        movie.title = request.form['title']
 
-    #movies = conn.execute('Your SQL query here', ('FROM movies WHERE ' + query + ' LIKE',)).fetchall()
+        movie.director = request.form['director']
 
-    conn.close()
+        movie.year = int(request.form['year'])
 
-    return render_template('search.html', movie=directors_movies, query=query)
+        movie.rating = float(request.form['rating'])
+
+        db.session.commit()
+
+        return redirect(url_for('index'))
+
+    return render_template('edit.html', movie=movie)
 
 
 if __name__ == '__main__':
