@@ -87,6 +87,18 @@ def edit_movie(id):
 
     return render_template('edit.html', movie=movie)
 
+@app.route('/delete/<int:id>')
+
+def delete_movie(id):
+
+    movie = Movie.query.get_or_404(id)
+
+    db.session.delete(movie)
+
+    db.session.commit()
+
+    return redirect(url_for('index'))
+
 
 if __name__ == '__main__':
 
